@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Aero Elite — Flight Simulator | Official</title>
+  <meta name="description" content="Aero Elite - Mobile flight simulator: offline real-world map, Blender-made airports, realistic flight controls. Download now!">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✈️</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0b0b0c;
+      --accent:#e03131;
+      --muted:#9aa0a6;
+      --card:#0f1112;
+      --glass: rgba(255,255,255,0.03);
+      --radius:14px;
+      --max:1100px;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      color-scheme: dark;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#070707 60%);color:#fff}
+    .container{max-width:var(--max);margin:0 auto;padding:28px}
+
+    header{display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:84px;height:84px;border-radius:16px;background:#0b0b0c;border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;padding:8px;box-shadow:0 6px 20px rgba(224,49,49,0.18)}
+    .logo img{width:100%;height:100%;object-fit:contain;display:block}
+    nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-weight:600}
+    nav a.cta{background:linear-gradient(90deg,var(--accent),#ff6b6b);padding:10px 14px;border-radius:10px;color:#fff}
+
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:center;margin-top:24px}
+    .hero .title{font-size:38px;line-height:1.03;font-weight:800;margin:0}
+    .hero p.lead{color:var(--muted);margin-top:12px;font-size:15px}
+
+    .mock{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);border-radius:18px;padding:18px;box-shadow:0 8px 30px rgba(0,0,0,0.6);}
+    .phone{width:100%;height:340px;border-radius:12px;background:repeating-linear-gradient(135deg, rgba(255,255,255,0.02) 0 1px, transparent 1px 8px);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+    .phone img{max-width:100%;max-height:100%;object-fit:cover}
+
+    .badges{display:flex;gap:10px;margin-top:16px}
+    .badge{padding:10px 12px;border-radius:10px;background:var(--card);border:1px solid rgba(255,255,255,0.03);font-weight:700}
+
+    .features{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:28px}
+    .card{background:var(--card);padding:18px;border-radius:14px;border:1px solid rgba(255,255,255,0.03)}
+    .card h4{margin:0 0 8px 0}
+    .muted{color:var(--muted);font-size:14px}
+
+    .screens{display:flex;gap:12px;margin-top:18px}
+    .screens img{width:calc(33% - 8px);height:150px;object-fit:cover;border-radius:10px;border:1px solid rgba(255,255,255,0.04)}
+
+    footer{margin-top:48px;padding:18px;border-radius:12px;background:linear-gradient(180deg, transparent, rgba(255,255,255,0.02));display:flex;justify-content:space-between;align-items:center}
+
+    /* responsive */
+    @media (max-width:980px){
+      .hero{grid-template-columns:1fr;}
+      .features{grid-template-columns:1fr 1fr}
+      .screens img{height:120px}
+    }
+    @media (max-width:520px){
+      nav{display:none}
+      .features{grid-template-columns:1fr}
+      .phone{height:240px}
+      .hero .title{font-size:28px}
+    }
+
+    /* little interactions */
+    .btn{display:inline-block;padding:12px 16px;border-radius:10px;font-weight:700;text-decoration:none;border:none;background:transparent;color:inherit;cursor:pointer}
+    .btn-outline{border:1px solid rgba(255,255,255,0.06);background:transparent}
+    .btn-primary{background:linear-gradient(90deg,var(--accent),#ff6b6b);color:#111}
+
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:var(--glass);color:var(--muted);font-weight:600}
+
+    .donate{background:linear-gradient(90deg,#ff6b6b,#ff4d4d);padding:10px 14px;border-radius:12px;color:#060606;font-weight:800;cursor:pointer;border:none}
+
+    .tagline{color:var(--muted);font-weight:600;font-size:13px}
+
+    .blink{animation:blnk 1s linear infinite}
+    @keyframes blnk{50%{opacity:0.2}100%{opacity:1}}
+    
+    /* video embed styles */
+    .video-wrap{position:relative;width:100%;height:100%}
+    .iframe{position:absolute;inset:0;width:100%;height:100%;border:0;border-radius:8px}
+    .poster{cursor:pointer;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;width:100%;height:100%;background-size:cover;background-position:center;border-radius:12px}
+    .play-btn{background:linear-gradient(90deg,var(--accent),#ff6b6b);padding:10px 14px;border-radius:999px;color:#060606;font-weight:800}
+
+    .whatsapp-fab{
+      position:fixed;
+      right:20px;
+      bottom:20px;
+      width:56px;
+      height:56px;
+      border-radius:50%;
+      background:#25d366;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow:0 12px 24px rgba(0,0,0,0.4);
+      text-decoration:none;
+      z-index:1000;
+      transition:transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .whatsapp-fab:hover{transform:translateY(-2px);box-shadow:0 16px 28px rgba(0,0,0,0.45)}
+    .whatsapp-fab img{width:26px;height:26px}
+
+    .donation-panel{
+      margin-top:14px;
+      padding:16px;
+      border-radius:14px;
+      background:linear-gradient(135deg, rgba(255,255,255,0.08), rgba(224,49,49,0.12));
+      border:1px solid rgba(255,255,255,0.08);
+      box-shadow:0 18px 30px rgba(0,0,0,0.35);
+      max-height:0;
+      opacity:0;
+      transform:translateY(-8px);
+      overflow:hidden;
+      transition:max-height 0.5s ease, opacity 0.35s ease, transform 0.35s ease;
+    }
+    .donation-panel.is-open{
+      max-height:420px;
+      opacity:1;
+      transform:translateY(0);
+    }
+    .donation-panel .title{
+      font-weight:800;
+      font-size:16px;
+      margin:0 0 8px 0;
+    }
+    .donation-panel .copy{
+      color:var(--muted);
+      font-size:14px;
+      margin:0 0 12px 0;
+    }
+    .donation-platforms{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+    .donation-link{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 14px;
+      border-radius:12px;
+      text-decoration:none;
+      font-weight:800;
+      background:rgba(255,255,255,0.08);
+      color:#fff;
+      border:1px solid rgba(255,255,255,0.12);
+      transition:transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+    .donation-link.primary{
+      background:linear-gradient(90deg,#ff6b6b,#ff4d4d);
+      color:#111;
+      border:none;
+    }
+    .donation-link:hover{
+      transform:translateY(-2px);
+      box-shadow:0 10px 20px rgba(0,0,0,0.35);
+      background:rgba(255,255,255,0.14);
+    }
+    .donation-link.primary:hover{
+      background:linear-gradient(90deg,#ff4d4d,#ff6b6b);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo">
+          <img src="assets/aero-elite-logo.png" alt="Aero Elite logo">
+        </div>
+        <div>
+          <div style="font-weight:800">Aero Elite</div>
+          <div class="tagline">Mobile flight simulator — indie release from McGregor Studios</div>
+        </div>
+      </div>
+      <nav>
+        <a href="#features">Features</a>
+        <a href="#screens">Screens</a>
+        <a href="#about">About</a>
+        <a class="cta" href="#download">Download</a>
+      </nav>
+    </header>
+
+    <main class="hero">
+      <section>
+        <h1 class="title">Aero Elite — Take the cockpit, beat the wind, master full control.</h1>
+        <p class="lead">Aero Elite is a carefully crafted flight simulator: real-world maps that work offline, airports you build in Blender, and controls tuned for mobile devices and low-end PCs. This isn’t a tap-and-win game — it’s a piloting experience.</p>
+
+        <div class="badges">
+          <div class="badge">Offline maps</div>
+          <div class="badge">Real physics</div>
+          <div class="badge">Custom airports</div>
+        </div>
+
+        <div style="margin-top:18px">
+          <a class="btn btn-primary" id="downloadBtn" href="#download">Download now — Google Play</a>
+          <a class="btn btn-outline" href="#about" style="margin-left:8px">Watch trailer</a>
+        </div>
+
+        <div style="margin-top:20px" class="muted">Note — this is an alpha demo: optimized for mid-range devices. Don’t worry, frequent updates are planned.</div>
+
+        <section id="features" style="margin-top:22px">
+          <div class="features">
+            <div class="card">
+              <h4>Real-World Maps (Offline)</h4>
+              <div class="muted">Download compact map tiles for offline use — zoom, pan, and add airport markers.</div>
+            </div>
+
+            <div class="card">
+              <h4>Blender Airports</h4>
+              <div class="muted">Create airports in Blender and import them into the game — add taxiways, terminals, and beacons.</div>
+            </div>
+
+            <div class="card">
+              <h4>Cockpit Controls</h4>
+              <div class="muted">Touch controls or gamepad — designed to make you feel like you own the aircraft.</div>
+            </div>
+          </div>
+        </section>
+
+      </section>
+
+      <aside class="mock">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <strong>Trailer</strong>
+            <div class="muted" style="margin-top:6px">Watch a short clip showing cockpit, takeoff, and smooth landings.</div>
+          </div>
+          <div style="text-align:right">
+            <div class="pill">Alpha 0.9</div>
+            <div class="muted" style="font-size:13px;margin-top:6px">25,000+ simulator miles</div>
+          </div>
+        </div>
+
+        <div class="phone" style="margin-top:12px">
+          <div class="video-wrap" id="trailerWrap">
+            <!-- Poster image (click to load embed) -->
+            <div id="poster" class="poster" style="background-image:url('https://img.youtube.com/vi/sBsWwQMA85Y/maxresdefault.jpg')">
+              <div style="background:rgba(0,0,0,0.45);padding:12px;border-radius:10px">
+                <div style="text-align:center;color:#fff;font-weight:800">Watch trailer</div>
+              <div style="margin-top:8px;text-align:center">
+                <span class="play-btn">Play ▶</span>
+              </div>
+            </div>
+          </div>
+
+            <!-- Hidden iframe container (YouTube player is inserted by JS on click) -->
+            <div id="iframeContainer" style="display:none;position:absolute;inset:0">
+              <div id="ytPlayer" style="width:100%;height:100%"></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-top:12px;justify-content:space-between;align-items:center">
+          <div class="muted">Screenshots from the beta build. Open on your phone to preview.</div>
+          <div style="display:flex;gap:8px">
+            <a class="btn btn-outline" href="#screens">View Screens</a>
+            <button class="btn donate-trigger" type="button" data-target="donatePanelHero" aria-expanded="false">Donate</button>
+          </div>
+        </div>
+        <div id="donatePanelHero" class="donation-panel" aria-hidden="true">
+          <div class="title">Support the Aero Elite journey</div>
+          <p class="copy">If this creative project inspires you, choose the donation platform that’s easiest for you. Every contribution fuels new airports, better physics, and more immersive updates.</p>
+          <div class="donation-platforms">
+            <a class="donation-link primary" href="https://gofund.me/7191e82f3" target="_blank" rel="noopener">GoFundMe — Donate</a>
+            <a class="donation-link" href="mailto:mcgregordenicesgmail.com?subject=Aero%20Elite%20Donation%20Options" title="Request another platform">Need another platform?</a>
+          </div>
+        </div>
+      </aside>
+
+    </main>
+
+
+    <section id="screens" class="screens" aria-label="Screenshots" style="display:flex;gap:12px;justify-content:center;">
+  <!-- Picha zitahifadhiwa hapa na JS -->
+</section>
+
+<script>
+  // Array ya picha zote unazotaka
+  const images = [
+    'https://imgur.com/06tg44t.jpg',
+    'https://i.imgur.com/Q4QisUU.jpg',
+    'https://imgur.com/PcLE3rQ.jpg',
+    'https://imgur.com/MxzlB6r.jpg',
+    'https://imgur.com/ETWQYjp.jpg',
+    'https://imgur.com/a5lZiXx.jpg',
+    'https://imgur.com/hPUX8Q4.jpg',
+    'https://imgur.com/MIcSXvg.jpg'
+  ];
+
+  const container = document.getElementById('screens');
+  const visibleCount = 3; // number of images visible at a time
+  let startIndex = 0;
+
+  // Initialize image elements
+  const imgElements = [];
+  for(let i=0;i<visibleCount;i++){
+    const imgEl = document.createElement('img');
+    imgEl.style.width = '300px';
+    imgEl.style.height = '200px';
+    imgEl.style.objectFit = 'cover';
+    imgEl.style.borderRadius = '10px';
+    imgEl.style.transition = 'opacity 1s ease-in-out';
+    imgEl.style.opacity = 1; // initially visible
+    container.appendChild(imgEl);
+    imgElements.push(imgEl);
+  }
+
+  function updateImages(){
+    // fade-out
+    for(let i=0;i<visibleCount;i++){
+      imgElements[i].style.opacity = 0;
+    }
+
+    // update src after fade-out
+    setTimeout(()=>{
+      for(let i=0;i<visibleCount;i++){
+        const imgIndex = (startIndex + i) % images.length;
+        imgElements[i].src = images[imgIndex];
+        imgElements[i].style.opacity = 1; // fade-in
+      }
+      startIndex = (startIndex + visibleCount) % images.length;
+    }, 500); // fade-out duration
+  }
+
+  // Auto-rotate every 4 seconds
+  setInterval(updateImages, 4000);
+
+  // First display
+  updateImages();
+</script>
+
+
+
+
+
+    <section id="about" style="margin-top:28px;display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start">
+      <div class="card">
+        <h3>Why Aero Elite?</h3>
+        <p class="muted">Aero Elite was born from a desire to bring realistic flight to people without expensive hardware. Here you won’t just rack up points — you’ll experience takeoff, navigation, approaches, and crosswind landings.</p>
+        <ul class="muted">
+          <li>Designed for mobile & tablet</li>
+          <li>Offline map tiles to save data</li>
+          <li>Easy airport creation via Blender</li>
+          <li>Highlights Swahili + African cultural angle</li>
+          <li>Shows media arts / digital arts contribution</li>
+          <li>Mentions educational + artistic impact</li>
+          <li>Mentions potential for international collaboration / mobility</li>
+          
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>Promo Copy</h3>
+        <p class="muted"><strong>Aero Elite — Take off, conquer, celebrate.</strong><br>
+        Join the small-but-passionate pilots who prefer precise control and realism. Move the throttle, plan your route, achieve a smooth touchdown, and show off your flying skills. This isn’t just a game — it’s a journey.</p>
+
+        <p class="muted"><em>“I’ve tried many simulators — Aero Elite was the one that made me keep flying. Ten minutes in and I was hooked.”</em></p>
+      </div>
+    </section>
+
+    <section id="download" style="margin-top:26px">
+      <div class="card" style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <h3 style="margin:0">Download or Support the Project</h3>
+          <p class="muted">The beta build is available on Google Play. Use the links below or contact me for iOS builds / APK for testing.</p>
+          <div style="margin-top:10px">
+            <a class="btn btn-primary" href="#">Google Play (coming)</a>
+            <a class="btn btn-outline" href="#" style="margin-left:8px">App Store (soon)</a>
+            <button class="donate donate-trigger" type="button" data-target="donatePanelDownload" aria-expanded="false" style="margin-left:8px">Donate</button>
+          </div>
+          <div id="donatePanelDownload" class="donation-panel" aria-hidden="true">
+            <div class="title">Power the next flight update</div>
+            <p class="copy">Support Aero Elite and help keep the skies expanding. Choose the platform that’s most convenient, and the link will take you straight to donate.</p>
+            <div class="donation-platforms">
+              <a class="donation-link primary" href="https://gofund.me/7191e82f3" target="_blank" rel="noopener">GoFundMe — Donate</a>
+              <a class="donation-link" href="mailto:mcgregordenicesgmail.com?subject=Aero%20Elite%20Donation%20Options" title="Request another platform">Need another platform?</a>
+            </div>
+          </div>
+        </div>
+
+        <div style="text-align:right">
+          <div class="muted">Contact: <a href="mailto:mcgregordenicesgmail.com" style="color:var(--muted);text-decoration:underline">mcgregordenices@gmail.com</a></div>
+          <div style="margin-top:8px" class="muted">Follow: @McGregorStudios</div>
+        </div>
+      </div>
+    </section>
+
+
+<section id="dev-builds" style="margin-top:26px">
+      <div class="card">
+        <h3>Early Access & Development Builds</h3>
+        <p class="muted">The game is still under development and not yet complete, but despite many challenges, I am continuing to improve it and ensure that this game from Tanzania reaches the market as soon as possible.</p>
+        <p class="muted">However, if you would like to check out the first completed stage of the UI/UX, you can click the buttons below to download.</p>
+        <div style="margin-top:18px; display:flex; gap:12px; flex-wrap:wrap">
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1PTWwn-hQTodTlAxajtZUZSbAGowVRbt-">Download PC (Zipped)</a>
+          <a class="btn btn-primary" href="https://drive.google.com/uc?export=download&id=1Eikpu3GlmVKw0tzH1iwai9sPqFDm4OCj" target="_blank">Download Android (APK)</a>
+        </div>
+      </div>
+    </section>
+
+
+
+    <!-- Centered horizontal social follow with caption -->
+<div id="social-center" style="
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  margin-top:40px;
+  gap:12px;
+">
+  <div style="color:#fff;font-weight:700;font-size:16px;text-align:center;">
+    Follow us and stay updated on YouTube, Facebook & Instagram!
+  </div>
+  <div style="display:flex;justify-content:center;gap:24px;">
+    <a href="https://www.youtube.com/channel/UCw-91ipKHPTkVwDdIaV_VHw" target="_blank" style="
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      width:50px;
+      height:50px;
+      border-radius:12px;
+      background:#FF0000;
+      text-decoration:none;
+    " title="Follow on YouTube">
+      <img src="https://img.icons8.com/ios-filled/24/ffffff/youtube-play.png" alt="YouTube">
+    </a>
+
+    <a href="https://www.facebook.com/AeroEliteFlightSimulator/" target="_blank" style="
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      width:50px;
+      height:50px;
+      border-radius:12px;
+      background:#1877F2;
+      text-decoration:none;
+    " title="Follow on Facebook">
+      <img src="https://img.icons8.com/ios-filled/24/ffffff/facebook-new.png" alt="Facebook">
+    </a>
+
+    <a href="https://www.instagram.com/mcgregordenise2020/" target="_blank" style="
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      width:50px;
+      height:50px;
+      border-radius:12px;
+      background:#C13584;
+      text-decoration:none;
+    " title="Follow on Instagram">
+      <img src="https://img.icons8.com/ios-filled/24/ffffff/instagram-new.png" alt="Instagram">
+    </a>
+  </div>
+</div>
+
+
+    <footer>
+      <div class="muted">© Aero Elite — McGregor Studios. All rights reserved.</div>
+      <div style="display:flex;gap:12px;align-items:center">
+        <a href="#" class="muted">Privacy</a>
+        <a href="#" class="muted">Terms</a>
+      </div>
+    </footer>
+  </div>
+
+  <a
+    class="whatsapp-fab"
+    href="https://wa.me/255741822716?text=Hello%20there%20Aero%20elite%20flght%20simulator!!"
+    target="_blank"
+    rel="noopener"
+    aria-label="Chat on WhatsApp"
+    title="Chat on WhatsApp"
+  >
+    <img src="https://img.icons8.com/ios-filled/50/ffffff/whatsapp.png" alt="">
+  </a>
+
+  <script>
+  // YouTube ID already inserted for you:
+  const VIDEO_ID = 'sBsWwQMA85Y';
+  const poster = document.getElementById('poster');
+  const iframeContainer = document.getElementById('iframeContainer');
+  let player;
+  let youTubeApiReady;
+
+  // Auto-generate thumbnail
+  const thumbImg = new Image();
+  thumbImg.onload = () => {
+    // If maxresdefault exists, use it; otherwise fallback to hqdefault
+    if(thumbImg.width > 120){
+      poster.style.backgroundImage = `url('https://img.youtube.com/vi/${VIDEO_ID}/maxresdefault.jpg')`;
+    } else {
+      poster.style.backgroundImage = `url('https://img.youtube.com/vi/${VIDEO_ID}/hqdefault.jpg')`;
+    }
+  };
+  thumbImg.onerror = () => {
+    poster.style.backgroundImage = `url('https://img.youtube.com/vi/${VIDEO_ID}/hqdefault.jpg')`;
+  };
+  thumbImg.src = `https://img.youtube.com/vi/${VIDEO_ID}/maxresdefault.jpg`;
+
+  const ensureYouTubeApi = () => {
+    if(window.YT && window.YT.Player){
+      return Promise.resolve();
+    }
+    if(!youTubeApiReady){
+      youTubeApiReady = new Promise((resolve) => {
+        window.onYouTubeIframeAPIReady = () => resolve();
+        const tag = document.createElement('script');
+        tag.src = 'https://www.youtube.com/iframe_api';
+        document.head.appendChild(tag);
+      });
+    }
+    return youTubeApiReady;
+  };
+
+  // Click on poster → play video
+  poster.addEventListener('click', async () => {
+    poster.style.display = 'none';
+    iframeContainer.style.display = 'block';
+
+    await ensureYouTubeApi();
+    player = new YT.Player('ytPlayer', {
+      videoId: VIDEO_ID,
+      playerVars: {
+        autoplay: 1,
+        playsinline: 1,
+        rel: 0,
+        modestbranding: 1,
+        controls: 0,
+        disablekb: 1,
+        iv_load_policy: 3,
+        fs: 0,
+        loop: 1,
+        playlist: VIDEO_ID
+      },
+      events: {
+        onReady: (event) => {
+          event.target.mute();
+          event.target.playVideo();
+        },
+        onStateChange: (event) => {
+          if(event.data === YT.PlayerState.ENDED){
+            event.target.seekTo(0);
+            event.target.playVideo();
+          }
+        }
+      }
+    });
+  });
+
+  // Smooth anchor scroll behavior
+  document.querySelectorAll('a[href^="#"]').forEach(a=>{
+    a.addEventListener('click', (e)=>{
+      const href = a.getAttribute('href');
+      if(!href || href === '#') return;
+      if(href.startsWith('#')){
+        e.preventDefault();
+        const id = href.slice(1);
+        const el = document.getElementById(id);
+        if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+      }
+    });
+  });
+
+  // download button micro-interaction
+  const dl = document.getElementById('downloadBtn');
+  if(dl){
+    dl.addEventListener('click', (e)=>{
+      e.preventDefault();
+      dl.textContent = 'Preparing...';
+      setTimeout(()=> dl.textContent = 'Download now — Google Play', 900);
+    });
+  }
+
+  const donateTriggers = document.querySelectorAll('.donate-trigger');
+  donateTriggers.forEach((trigger) => {
+    trigger.addEventListener('click', () => {
+      const targetId = trigger.getAttribute('data-target');
+      const panel = document.getElementById(targetId);
+      if(!panel) return;
+
+      const isOpen = panel.classList.contains('is-open');
+      document.querySelectorAll('.donation-panel.is-open').forEach((openPanel) => {
+        if(openPanel !== panel){
+          openPanel.classList.remove('is-open');
+          openPanel.setAttribute('aria-hidden', 'true');
+        }
+      });
+      donateTriggers.forEach((btn) => {
+        if(btn !== trigger){
+          btn.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      if(isOpen){
+        panel.classList.remove('is-open');
+        panel.setAttribute('aria-hidden', 'true');
+        trigger.setAttribute('aria-expanded', 'false');
+        return;
+      }
+
+      panel.classList.add('is-open');
+      panel.setAttribute('aria-hidden', 'false');
+      trigger.setAttribute('aria-expanded', 'true');
+    });
+  });
+</script>
+
+
